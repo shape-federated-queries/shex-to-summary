@@ -1,5 +1,5 @@
 {
-  "name": "shex_to_as",
+  "name": "shex_to_summary",
   "module": "index.ts",
   "type": "module",
   "scripts": {
