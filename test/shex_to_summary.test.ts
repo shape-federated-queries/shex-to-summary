@@ -5,13 +5,10 @@ import {
   handleShape,
   handleShapeAnd,
   handleShapeOr,
-  Kind,
   mergeKg,
   mergeUnionKg,
   quadToString,
-  shex_to_kg,
-  type ISummary,
-  type IKGConstraint,
+  shex_to_summary,
 } from '../lib/shex_to_summary';
 import type { NodeConstraint, ShapeOr, Shape, valueSetValue, ShapeDecl, ShapeAnd } from 'shexj';
 import { DataFactory } from 'rdf-data-factory';
@@ -19,6 +16,7 @@ import type * as RDF from '@rdfjs/types';
 import { isomorphic } from 'rdf-isomorphic';
 import * as Shex from '@shexjs/parser';
 import { isResult, type IResult } from 'result-interface';
+import { Kind, type ISummary, type IKGConstraint } from '../lib/types';
 
 const DF = new DataFactory<RDF.Quad>();
 const SHEX_PARSER = Shex.construct('');
@@ -850,7 +848,7 @@ describe(handleShapeAnd.name, () => {
   });
 });
 
-describe(shex_to_kg.name, () => {
+describe(shex_to_summary.name, () => {
   it('converts ShEx with predicate-only shape to KG given simple shape', () => {
     const subject = DF.namedNode('http://a.example/S1');
 
@@ -895,7 +893,7 @@ describe(shex_to_kg.name, () => {
       ]),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(
@@ -996,7 +994,7 @@ describe(shex_to_kg.name, () => {
       ]),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(
@@ -1089,7 +1087,7 @@ describe(shex_to_kg.name, () => {
       ]),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(
@@ -1158,7 +1156,7 @@ describe(shex_to_kg.name, () => {
       constraints: new Map(),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(
@@ -1237,7 +1235,7 @@ describe(shex_to_kg.name, () => {
       constraints: new Map(),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(
@@ -1392,7 +1390,7 @@ describe(shex_to_kg.name, () => {
       ]),
     };
 
-    const resp = shex_to_kg(schema) as IResult<ISummary>;
+    const resp = shex_to_summary(schema) as IResult<ISummary>;
 
     expect(isResult(resp)).toBe(true);
     expect(

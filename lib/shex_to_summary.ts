@@ -12,12 +12,11 @@ import type {
   tripleExprOrRef,
   shapeExprOrRef,
   NodeConstraint,
-  nodeKind,
-  IRIREF,
-  valueSetValue,
 } from 'shexj';
 import { DataFactory } from 'rdf-data-factory';
 import { error, isError, result, type Result } from 'result-interface';
+import { Kind } from './types';
+import type { ISummary, IKGConstraint, IShapeTreeNode } from './types';
 
 const DF = new DataFactory<RDF.Quad>();
 
@@ -27,7 +26,7 @@ const DF = new DataFactory<RDF.Quad>();
  * @param {Schema} schema A ShEx schema.
  * @returns {Result<ISummary, string>} The resulting knowledge graph.
  */
-export function shex_to_kg(schema: Schema): Result<ISummary, string> {
+export function shex_to_summary(schema: Schema): Result<ISummary, string> {
   const kg: ISummary = {
     statements: [],
     unionStatement: [],
@@ -44,7 +43,7 @@ export function shex_to_kg(schema: Schema): Result<ISummary, string> {
   }
 
   for (const shape of rootNodesResp.value) {
-    const res = shape_to_kg(shape.shape, availableShapes);
+    const res = shape_to_summary(shape.shape, availableShapes);
     if (isError(res)) {
       return res;
     }
@@ -60,7 +59,7 @@ export function shex_to_kg(schema: Schema): Result<ISummary, string> {
  * @param {Map<string, ShapeDecl>} availableShapes the shapes that are available in the schema
  * @returns {Result<ISummary, string>} - The resulting knowledge graph.
  */
-function shape_to_kg(
+function shape_to_summary(
   shape: ShapeDecl,
   availableShapes: Map<string, ShapeDecl>,
 ): Result<ISummary, string> {
@@ -394,49 +393,8 @@ export function mergeUnionKg(mergeableKg: ISummary, otherKg: ISummary): void {
   mergeableKg.unionStatement.push(otherKg);
 }
 
-export interface ISummary {
-  statements: RDF.Quad[];
-  unionStatement: ISummary[];
-  constraints: Map<string, IKGConstraint[]>;
-}
-
-export type IKGConstraint = {
-  statement: RDF.Quad;
-} & (
-  | {
-      kind: Kind.NODE_KIND;
-      constraint: nodeKind;
-    }
-  | {
-      kind: Kind.IRI_REF;
-      constraint: IRIREF;
-    }
-  | {
-      kind: Kind.DATA_TYPE;
-      constraint: IRIREF;
-    }
-  | {
-      kind: Kind.VALUE_SET;
-      constraint: valueSetValue[];
-    }
-);
-
-export enum Kind {
-  NODE_KIND,
-  IRI_REF,
-  DATA_TYPE,
-  VALUE_SET,
-}
-
 function isShapeOr(shape: ShapeOr | ShapeAnd): shape is ShapeOr {
   return shape.type === 'ShapeOr';
-}
-
-export interface IShapeTreeNode {
-  id: string;
-  shape: ShapeDecl;
-  children: IShapeTreeNode[];
-  relation?: 'OR' | 'AND';
 }
 
 /**
