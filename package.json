@@ -1,6 +1,6 @@
 {
   "name": "shex_to_summary",
-  "module": "index.ts",
+  "module": "lib/index.ts",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
