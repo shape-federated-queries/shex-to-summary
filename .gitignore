@@ -27,6 +27,12 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# compiled output (next to source in lib/)
+lib/**/*.js
+lib/**/*.d.ts
+lib/**/*.js.map
+lib/**/*.d.ts.map
+
 # IntelliJ based IDEs
 .idea
 

@@ -11,21 +11,21 @@ export type IKGConstraint = {
   statement: RDF.Quad;
 } & (
   | {
-      kind: Kind.NODE_KIND;
-      constraint: nodeKind;
-    }
+    kind: Kind.NODE_KIND;
+    constraint: nodeKind;
+  }
   | {
-      kind: Kind.IRI_REF;
-      constraint: IRIREF;
-    }
+    kind: Kind.IRI_REF;
+    constraint: IRIREF;
+  }
   | {
-      kind: Kind.DATA_TYPE;
-      constraint: IRIREF;
-    }
+    kind: Kind.DATA_TYPE;
+    constraint: IRIREF;
+  }
   | {
-      kind: Kind.VALUE_SET;
-      constraint: valueSetValue[];
-    }
+    kind: Kind.VALUE_SET;
+    constraint: valueSetValue[];
+  }
 );
 
 export enum Kind {

@@ -81,10 +81,10 @@ HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will tr
 With the following `frontend.tsx`:
 
 ```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
-// import .css files directly and it works
+// Import .css files directly and it works
 import './index.css';
 
 const root = createRoot(document.body);

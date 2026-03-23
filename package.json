@@ -1,17 +1,28 @@
 {
   "name": "shex_to_summary",
-  "main": "lib/index.ts",
-  "types": "lib/index.ts",
-  "module": "lib/index.ts",
   "type": "module",
   "version": "0.0.1",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build:bundle": "bun build lib/*.ts --outdir dist --sourcemap --packages external",
+    "build:types": "tsc --build tsconfig.build.json",
+    "build": "bun run build:bundle && bun run build:types",
+    "build:clean": "tsc --build tsconfig.build.json --clean",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "rdf-data-factory": "^2.0.2",
+    "result-interface": "^2.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -23,14 +34,8 @@
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
     "rdf-isomorphic": "^2.0.1",
+    "typescript": "^5",
     "typescript-eslint": "^8.57.1",
     "vitest": "^4.1.0"
-  },
-  "dependencies": {
-    "rdf-data-factory": "^2.0.2",
-    "result-interface": "^2.3.3"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   }
 }

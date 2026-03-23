@@ -1,4 +1,6 @@
 import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
+import { error, isError, result, type Result } from 'result-interface';
 import type {
   Schema,
   TripleConstraint,
@@ -13,8 +15,6 @@ import type {
   shapeExprOrRef,
   NodeConstraint,
 } from 'shexj';
-import { DataFactory } from 'rdf-data-factory';
-import { error, isError, result, type Result } from 'result-interface';
 import { Kind } from './types';
 import type { ISummary, IKGConstraint, IShapeTreeNode } from './types';
 
@@ -36,7 +36,7 @@ export function shex_to_summary(schema: Schema): Result<ISummary, string> {
   if (schema.shapes === undefined) {
     return result(kg);
   }
-  const availableShapes: Map<string, ShapeDecl> = new Map(schema.shapes.map((el) => [el.id, el]));
+  const availableShapes: Map<string, ShapeDecl> = new Map(schema.shapes.map(el => [ el.id, el ]));
   const rootNodesResp = shex_to_shape_tree(schema);
   if (isError(rootNodesResp)) {
     return rootNodesResp;
@@ -137,7 +137,7 @@ export function handleNodeConstraint(
   }
 
   const kg: ISummary = {
-    statements: [quad],
+    statements: [ quad ],
     unionStatement: [],
     constraints,
   };
@@ -180,11 +180,13 @@ export function handleShape(
     unionStatement: [],
     constraints: new Map(),
   };
-  // we are ignoring extra for now
+  // We are ignoring extra for now
   // we are ignoring extend for now
   if (shape.expression !== undefined) {
     const res = handleTripleExprOrRef(shape.expression, subject, availableShapes);
-    if (isError(res)) return res;
+    if (isError(res)) {
+      return res;
+    }
     mergeKg(kg, res.value);
   }
 
@@ -229,7 +231,7 @@ function handleTripleConstraint(
 
   if (expr.valueExpr === undefined) {
     return result({
-      statements: [DF.quad(subject, predicate, DF.blankNode())],
+      statements: [ DF.quad(subject, predicate, DF.blankNode()) ],
       unionStatement: [],
       constraints: new Map(),
     });
@@ -248,7 +250,7 @@ function handleTripleConstraint(
     return res;
   }
   return result({
-    statements: [connectingTriple, ...res.value.statements],
+    statements: [ connectingTriple, ...res.value.statements ],
     unionStatement: res.value.unionStatement,
     constraints: res.value.constraints,
   });
@@ -286,7 +288,9 @@ function handleOneOf(
   };
   for (const sub of expr.expressions) {
     const res = handleTripleExprOrRef(sub, subject, availableShapes);
-    if (isError(res)) return res;
+    if (isError(res)) {
+      return res;
+    }
     mergeUnionKg(kg, res.value);
   }
   return result(kg);
@@ -298,7 +302,7 @@ function handleShapeDeclarationRef(
   predicate: RDF.NamedNode | undefined,
   availableShapes: Map<string, ShapeDecl>,
 ): Result<ISummary, string> {
-  //The expression is a constraint by a shape
+  // The expression is a constraint by a shape
   // Thus we get the shape and make a star shape sub KG
   const shape = availableShapes.get(declaration);
   if (shape === undefined) {
@@ -344,9 +348,9 @@ function handleShapeOrAnd(
   subject: RDF.NamedNode,
   availableShapes: Map<string, ShapeDecl>,
 ): Result<ISummary, string> {
-  const mergeFunction: (mergeableKg: ISummary, otherKg: ISummary) => void = isShapeOr(shape)
-    ? mergeUnionKg
-    : mergeKg;
+  const mergeFunction: (mergeableKg: ISummary, otherKg: ISummary) => void = isShapeOr(shape) ?
+    mergeUnionKg :
+    mergeKg;
 
   const kg: ISummary = {
     statements: [],
@@ -354,9 +358,9 @@ function handleShapeOrAnd(
     constraints: new Map(),
   };
   for (const expression of shape.shapeExprs) {
-    const resultKg: Result<ISummary, string> = isShapeExpression(expression)
-      ? handleShapeExpression(expression, subject, availableShapes)
-      : handleShapeDeclarationRef(expression, subject, undefined, availableShapes);
+    const resultKg: Result<ISummary, string> = isShapeExpression(expression) ?
+      handleShapeExpression(expression, subject, availableShapes) :
+      handleShapeDeclarationRef(expression, subject, undefined, availableShapes);
     if (isError(resultKg)) {
       return resultKg;
     }
@@ -379,7 +383,7 @@ function isShapeExpression(entity: shapeExprOrRef): entity is shapeExpr {
 export function mergeKg(mergeableKg: ISummary, otherKg: ISummary): void {
   mergeableKg.statements = mergeableKg.statements.concat(otherKg.statements);
   mergeableKg.unionStatement = mergeableKg.unionStatement.concat(otherKg.unionStatement);
-  for (const [key, constraint] of otherKg.constraints) {
+  for (const [ key, constraint ] of otherKg.constraints) {
     const mergeableKgConstraint = mergeableKg.constraints.get(key);
     if (mergeableKgConstraint) {
       mergeableKgConstraint.push(...constraint);
@@ -409,7 +413,7 @@ function shex_to_shape_tree(schema: Schema): Result<IShapeTreeNode[], string> {
     return result([]);
   }
 
-  const availableShapes: Map<string, ShapeDecl> = new Map(schema.shapes.map((el) => [el.id, el]));
+  const availableShapes: Map<string, ShapeDecl> = new Map(schema.shapes.map(el => [ el.id, el ]));
   const trees: IShapeTreeNode[] = [];
 
   for (const shape of schema.shapes) {
@@ -423,7 +427,7 @@ function shex_to_shape_tree(schema: Schema): Result<IShapeTreeNode[], string> {
   const nestedIds = new Set<string>();
   collectNestedIds(trees, nestedIds);
 
-  return result(trees.filter((node) => !nestedIds.has(node.id)));
+  return result(trees.filter(node => !nestedIds.has(node.id)));
 }
 
 function collectNestedIds(nodes: IShapeTreeNode[], nestedIds: Set<string>): void {
